@@ -33,6 +33,9 @@ CREATE TABLE `procurement` (
 -- Dumping data for table `orders`
 -- 
 
+DELETE FROM procurement WHERE 1;
+
+
 INSERT INTO `procurement` (`name`, `quantity`, `misc`, `delivery_date`) VALUES 
 ('喜字',10,'门、窗、墙壁、镜子、门把手、婚车、电视机等', '2014-02-28 00:00:00'),
 ('百合花',1,'房间，寓意百年好合', '2014-02-28 00:00:00'),

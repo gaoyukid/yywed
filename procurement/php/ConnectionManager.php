@@ -7,6 +7,7 @@ class ConManager{
     //change to your database name
 		mysql_select_db("sigmagrid") or 
 		     die("Could not select database: " . mysql_error());
+		mysql_query('');
 	}
 }
 ?>

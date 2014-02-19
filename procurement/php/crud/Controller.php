@@ -8,6 +8,8 @@ $json=json_decode(stripslashes($_POST["_gt_json"]));
 $conManager = new ConManager();
 $conManager->getConnection();
 
+$handle = mysql_query("set names utf8");
+
 
 if($json->{'action'} == 'load'){
   $sql = "select * from procurement";
@@ -26,55 +28,51 @@ if($json->{'action'} == 'load'){
   $sql = "";
   $params = array();
   $errors = "";
-  
+  $ret = "";
   //deal with those deleted
   $deletedRecords = $json->{'deletedRecords'};
   foreach ($deletedRecords as $value){
     $params[] = $value->order_no;
   }
-  $sql = "delete from procurement where order_no in (" . join(",", $params) . ")";
-  if(mysql_query($sql)==FALSE){
-    $errors .= mysql_error();
-  }
+  
+  if(count($params) > 0)
+  {
+	$sql = "delete from procurement where order_no in (" . join(",", $params) . ")";
+	if(mysql_query($sql)==FALSE){
+		$errors .= mysql_error();
+	}
+  } 
   
   //deal with those updated
   $sql = "";
   $updatedRecords = $json->{'updatedRecords'};
   foreach ($updatedRecords as $value){
-    $sql = "update `procurement` set ".
-      "`employee`='".$value->employee . "', ".
-      "`country`='".$value->country . "', ".
-      "`customer`='".$value->customer . "', ".
-      "`order2005`=".$value->order2005 . ", ".
-      "`order2006`=".$value->order2006 . ", ".
-      "`order2007`=".$value->order2007 . ", ".
-      "`order2008`=".$value->order2008 . ", ".
-      "`delivery_date`='".$value->delivery_date . "' ".
-      "where `order_no`=".$value->order_no;
+    $sql = "update procurement set ".
+      "name='".$value->name . "', ".
+      "quantity=".$value->quantity . ", ".
+      "in_stock=".$value->in_stock . ", ".
+      "misc='".$value->misc . "', ".
+      "delivery_date='".$value->delivery_date . "' ".
+      "where order_no=".$value->order_no;
       if(mysql_query($sql)==FALSE){
         $errors .= mysql_error();
       }
   }
-  
-
 
   //deal with those inserted
   $sql = "";
   $insertedRecords = $json->{'insertedRecords'};
   foreach ($insertedRecords as $value){
-    $sql = "insert into orders (`employee`, `country`, `customer`, `order2005`,`order2006`, `order2007`, `order2008`, `delivery_date`) VALUES ('".
-      $value->employee."', '".$value->country."', '".$value->customer."', '".$value->order2005."', '".$value->order2006."', '".$value->order2007."', '".$value->order2008."',  '".$value->delivery_date."')";
+    $sql = "insert into procurement (`name`, `quantity`, `in_stock`, `misc`,`delivery_date`) VALUES ('".
+      $value->name."', '".$value->quantity."', '".$value->in_stock."', '".$value->misc."',  '".$value->delivery_date."')";
     if(mysql_query($sql)==FALSE){
       $errors .= mysql_error();
     }
   }
   
-
-  $ret = "{success : true,exception:''}";
+	
+  $ret = "{success : true,exception: ''}";
   echo $ret;
 }
-
-
-
 
 ?>
